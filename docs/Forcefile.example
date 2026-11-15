@@ -1,0 +1,32 @@
+# Forcefile at the git root. Order of entries doesn't matter
+# layer on ~/.config/forcefield/base
+EXTEND base
+# RW root; defaults to the git root
+WORKSPACE .
+READONLY /usr /etc /opt
+READONLY ~/.gitconfig ~/.cargo/bin
+HIDE .env secrets/
+# per-sandbox writable copies
+CACHE ~/.cargo/registry ~/.npm
+ALLOW tcp 443
+ALLOW udp 53
+ALLOW host api.anthropic.com github.com index.crates.io static.crates.io
+LIMIT memory 8G
+LIMIT tasks 512
+LIMIT cpu 200%
+INJECT api.anthropic.com x-api-key keyring:anthropic
+PASSENV TERM COLORTERM LANG
+ENV EDITOR=vim
+# default argc, overridable
+CMD claude
+# default argv
+ARGS --dangerously-skip-permissions
+
+# rules:
+# One instruction per line: a keyword, then arguments separated by whitespace.
+# Keywords are case-insensitive and written uppercase by convention, as in Dockerfiles.
+# `#` starts a comment only at the beginning of a line, as in Dockerfiles. A # partway through a line is ordinary text, which protects paths and URLs that contain one.
+# Double quotes for arguments containing spaces. Nothing else: no escapes, no variable expansion.
+# CMD takes its words literally, with no shell involved.
+# Optionally, \ at the end of a line continues it
+# Errors must report file:line and the instruction.
